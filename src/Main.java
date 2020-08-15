@@ -18,15 +18,20 @@ public class Main {
 	private static int GRID_SIZE = 32;
 
 	public static void main(String args[]) {
-		GameController gameController = new GameController(TITLE, WIDTH, HEIGHT, SCALE, GRID_SIZE);
-		gameController.constructControllers();
-		
 		//Sprite kit
 		BufferedImage sprites = Sprite.readImage("images/colored_transparent_packed.png");
+				
+		//UI
+		UI ui = new UI(sprites);
+		
+		//GameController
+		GameController gameController = new GameController(TITLE, WIDTH, HEIGHT, SCALE, GRID_SIZE);
+		gameController.constructControllers(ui);
+		
 		
 		//Add different objects
 		GameObject[] objectTypes = {
-				new Player(gameController, 0, 0, sprites),
+				new Player(gameController, 0, 0, sprites, ui),
 				new Tree(gameController, 0, 0, sprites),
 				new Wall(gameController, 0, 0, sprites),
 				new Wizard(gameController, 0, 0, sprites)};

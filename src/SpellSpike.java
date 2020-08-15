@@ -21,6 +21,9 @@ public class SpellSpike extends GameObjectMoving {
 	private float dy;
 	private Random rand;
 	private int chance = 4;
+	private Color colorParticle;
+	private Color colorParticleImpact;
+	private int particleSize = 8;
 	
 	public SpellSpike(GameController gameController, float posX, float posY, BufferedImage sprites, GameObject owner, float dx, float dy) {
 		super(gameController, posX, posY, 16, 16);
@@ -29,6 +32,8 @@ public class SpellSpike extends GameObjectMoving {
 		this.dy = dy;
 		this.dx = dx;
 		rand = new Random();
+		colorParticle = new Color(15, 187, 249, 55);
+		colorParticleImpact = new Color(15, 187, 249, 255);
 
 		int w = 8;
 		int h = 8;
@@ -52,10 +57,6 @@ public class SpellSpike extends GameObjectMoving {
 		image = rotated;
 		sprite = new SpriteBasic(gameController, this, image);
 		
-		if(owner instanceof Player) {
-		} else {
-			addSolidClass((new Player(gameController, 0, 0, sprites)).getClass());			
-		}
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
@@ -77,7 +78,12 @@ public class SpellSpike extends GameObjectMoving {
 	}
 
 	@Override
-	public void kill() {}
+	public void kill() {
+		levelController.addGameObject(new Particle(gameController, posX, posY, particleSize, colorParticleImpact, dx, dy));
+		levelController.addGameObject(new Particle(gameController, posX, posY, particleSize, colorParticleImpact, dx, -dy));
+		levelController.addGameObject(new Particle(gameController, posX, posY, particleSize, colorParticleImpact, -dx, dy));
+		levelController.addGameObject(new Particle(gameController, posX, posY, particleSize, colorParticleImpact, -dx, -dy));
+	}
 
 	@Override
 	public void restartLevel() {
@@ -98,7 +104,29 @@ public class SpellSpike extends GameObjectMoving {
 		if(newPos[2] == 1.0f) {
 			levelController.removeGameObject(this);
 		} else if(rand.nextInt(chance) == 0) {
-			levelController.addGameObject(new Particle(gameController, posX, posY, 8, new Color(15, 187, 249, 55), -dx, -dy));	
+			levelController.addGameObject(new Particle(gameController, posX, posY, particleSize, colorParticle, -dx, -dy));	
 		}
+		
+		for(GameObject obj : levelController.getGameObjects()) {
+			if(obj == this) continue;
+			
+			if(owner instanceof Player) {
+				if(obj instanceof Enemy && collide(obj)) {
+					levelController.removeGameObject(this);
+					Wizard wizard = (Wizard) obj;
+					wizard.hit();
+				}
+			} else {
+				if(obj instanceof Player && collide(obj)) {
+					levelController.removeGameObject(this);
+					Player player = (Player) obj;
+					player.hit();
+				}				 
+			}
+		}
+	}
+
+	public GameObject getOwner() {
+		return owner;
 	}
 }

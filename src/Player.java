@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import nWiweEngine.EditorObject;
@@ -12,16 +11,19 @@ import nWiweEngine.SpriteBasic;
 
 public class Player extends GameObjectMoving {
 	private BufferedImage sprites;
+	private UI ui;
 	private GraphicCanvas graphicCanvas;
 	private int speed = 4;
 	private boolean facingRight = true;
 	private int attackCooldown = 0;
+	private boolean hit = false;
 	private float defX;
 	private float defY;
 	
-	public Player(GameController gameController, float posX, float posY, BufferedImage sprites) {
+	public Player(GameController gameController, float posX, float posY, BufferedImage sprites, UI ui) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
 		this.sprites = sprites;
+		this.ui = ui;
 		graphicCanvas = gameController.getGameWindow().getGraphicCanvas();
 		defX = posX;
 		defY = posY;
@@ -37,15 +39,18 @@ public class Player extends GameObjectMoving {
 	@Override
 	public Sprite getSprite() {		
 		BufferedImage image;
-		if(attackCooldown != 0) {
+		if(hit) {
 			image = Sprite.getSprite(sprites, 322, 116, 11, 10);
-			BufferedImage attackImage = new BufferedImage(11, 10, BufferedImage.TYPE_INT_ARGB);
-			Graphics g = attackImage.createGraphics();
-			g.setColor(Color.WHITE);
-			g.fillOval(0, 0, 11, 10);
-			g.drawImage(image, 0, 0, null);
-			g.dispose();
-			image = attackImage;
+			
+			for(int x=0; x<11; x++) {
+				for(int y=0; y<10; y++) {
+					Color c = new Color(image.getRGB(x, y));
+					if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
+						image.setRGB(x, y, Color.WHITE.getRGB());
+					}
+				}
+			}
+			hit = false;
 		} else {
 			image = Sprite.getSprite(sprites, 322, 116, 11, 10);
 		}
@@ -62,7 +67,7 @@ public class Player extends GameObjectMoving {
 
 	@Override
 	public EditorObject initEditorObject() {
-		return new EditorPlayer(sprites);
+		return new EditorPlayer(sprites, ui);
 	}
 
 	@Override
@@ -90,8 +95,8 @@ public class Player extends GameObjectMoving {
 	@Override
 	public void update() {
 		InputController inputC = gameController.getInputController();
-		int dx = 0;
-		int dy = 0;
+		float dx = 0;
+		float dy = 0;
 		float offsetX = 0;
 		float offsetY = 0;
 		
@@ -118,7 +123,7 @@ public class Player extends GameObjectMoving {
 				facingRight = false;
 			}
 			
-			//space
+			//mouse
 			if(inputC.isMouseKeyPressed(1)) {
 				int spellSpeed = 16;
 				float mouseX = inputC.getMouseX();
@@ -134,23 +139,34 @@ public class Player extends GameObjectMoving {
 				dxSpell = (dxSpell/div)*spellSpeed;
 				dySpell = (dySpell/div)*spellSpeed;
 				
-				attackCooldown = 30;
+				attackCooldown = 25;
 				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
-				levelController.addGameObject(new Particle(gameController, posX, posY, 16, new Color(55, 55, 55, 100), dxSpell/2, dySpell/2));	
-				levelController.addGameObject(new Particle(gameController, posX, posY, 16, new Color(55, 55, 55, 100), dxSpell/2, dySpell/2));	
-				addMomentum(-dxSpell*4, -dySpell*4);
-				move(-dxSpell, -dySpell);
-			} else {
-				float oldX = posX; 
-				float oldY = posY;
-				float[] newPos = move(dx, dy);
-				offsetX = newPos[0] - oldX;
-				offsetY = newPos[1] - oldY;
+				addMomentum(-(dxSpell*10)/8, -(dySpell*10)/8);
+								
+				Color smokeColor = new Color(55, 55, 55, 150);
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
 			}
 		} else {
 			attackCooldown--;
 		}
+		
+		float oldX = posX; 
+		float oldY = posY;
+		float[] newPos = move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
+		offsetX = newPos[0] - oldX;
+		offsetY = newPos[1] - oldY;
+		
 		graphicCanvas.increaseOffsetX(offsetX);
 		graphicCanvas.increaseOffsetY(offsetY);
+	}
+
+	public void hit() {
+		ui.increaeLife(-1);
+		if(ui.getLife() == 0) {
+			levelController.restartLevel();
+			ui.setLife(6);
+		}
+		hit = true;
 	}
 }
