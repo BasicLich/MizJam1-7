@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import nWiweEngine.EditorObject;
 import nWiweEngine.GameController;
@@ -18,6 +19,8 @@ public class SpellSpike extends GameObjectMoving {
 	private GameObject owner;
 	private float dx;
 	private float dy;
+	private Random rand;
+	private int chance = 4;
 	
 	public SpellSpike(GameController gameController, float posX, float posY, BufferedImage sprites, GameObject owner, float dx, float dy) {
 		super(gameController, posX, posY, 16, 16);
@@ -25,6 +28,7 @@ public class SpellSpike extends GameObjectMoving {
 		this.owner = owner;
 		this.dy = dy;
 		this.dx = dx;
+		rand = new Random();
 
 		int w = 8;
 		int h = 8;
@@ -53,6 +57,7 @@ public class SpellSpike extends GameObjectMoving {
 			addSolidClass((new Player(gameController, 0, 0, sprites)).getClass());			
 		}
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
+		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
 	}
 
@@ -92,6 +97,8 @@ public class SpellSpike extends GameObjectMoving {
 		float[] newPos = move(dx, dy, 0);
 		if(newPos[2] == 1.0f) {
 			levelController.removeGameObject(this);
+		} else if(rand.nextInt(chance) == 0) {
+			levelController.addGameObject(new Particle(gameController, posX, posY, 8, new Color(15, 187, 249, 55), -dx, -dy));	
 		}
 	}
 }

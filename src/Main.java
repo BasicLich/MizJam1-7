@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import nWiweEngine.GameController;
 import nWiweEngine.GameObject;
@@ -26,7 +27,9 @@ public class Main {
 		//Add different objects
 		GameObject[] objectTypes = {
 				new Player(gameController, 0, 0, sprites),
-				new Tree(gameController, 0, 0, sprites)};
+				new Tree(gameController, 0, 0, sprites),
+				new Wall(gameController, 0, 0, sprites),
+				new Wizard(gameController, 0, 0, sprites)};
 		gameController.addObjectTypes(objectTypes);
 		
 		//Lights
@@ -42,7 +45,7 @@ public class Main {
 			levelController.loadLevel("level.lvl");
 			levelController.startGame();
 		}
-		
+
 		GameWindow gameWindow = gameController.getGameWindow();
 		gameWindow.constructWindow();
 		gameWindow.getGraphicCanvas().setDefaultColor(new Color(55, 65, 35));

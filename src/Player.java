@@ -16,13 +16,18 @@ public class Player extends GameObjectMoving {
 	private int speed = 4;
 	private boolean facingRight = true;
 	private int attackCooldown = 0;
+	private float defX;
+	private float defY;
 	
 	public Player(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
 		this.sprites = sprites;
 		graphicCanvas = gameController.getGameWindow().getGraphicCanvas();
+		defX = posX;
+		defY = posY;
 		
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
+		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
 	}
 
@@ -61,10 +66,18 @@ public class Player extends GameObjectMoving {
 	}
 
 	@Override
-	public void kill() {}
+	public void kill() {
+		setPos((int) defX, (int) defY);
+		graphicCanvas.setOffsetX(0);
+		graphicCanvas.setOffsetY(0);
+	}
 
 	@Override
-	public void restartLevel() {}
+	public void restartLevel() {
+		setPos((int) defX, (int) defY);
+		graphicCanvas.setOffsetX(0);
+		graphicCanvas.setOffsetY(0);
+	}
 
 	@Override
 	public void spawn() {}
@@ -122,7 +135,9 @@ public class Player extends GameObjectMoving {
 				dySpell = (dySpell/div)*spellSpeed;
 				
 				attackCooldown = 30;
-				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));	
+				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, new Color(55, 55, 55, 100), dxSpell/2, dySpell/2));	
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, new Color(55, 55, 55, 100), dxSpell/2, dySpell/2));	
 				addMomentum(-dxSpell*4, -dySpell*4);
 				move(-dxSpell, -dySpell);
 			} else {
