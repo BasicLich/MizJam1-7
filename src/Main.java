@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import nWiweEngine.GameController;
 import nWiweEngine.GameObject;
@@ -14,7 +13,7 @@ public class Main {
 	private static String TITLE = "GAME TITLE";
 	private static int WIDTH = 1820;
 	private static int HEIGHT = 980;
-	private static float SCALE = 1.0f;
+	private static float SCALE = 1f;
 	private static int GRID_SIZE = 32;
 
 	public static void main(String args[]) {
@@ -34,7 +33,11 @@ public class Main {
 				new Player(gameController, 0, 0, sprites, ui),
 				new Tree(gameController, 0, 0, sprites),
 				new Wall(gameController, 0, 0, sprites),
-				new Wizard(gameController, 0, 0, sprites)};
+				new Water(gameController, 0, 0),
+				new Warrior(gameController, 0, 0, sprites),
+				new Wizard(gameController, 0, 0, sprites),
+				new Key(gameController, 0, 0, sprites),
+				new Door(gameController, 0, 0, sprites)};
 		gameController.addObjectTypes(objectTypes);
 		
 		//Lights

@@ -10,8 +10,6 @@ import nWiweEngine.SpriteBasic;
 
 public class Wizard extends Enemy {
 	private BufferedImage sprites;
-	private float defX;
-	private float defY;
 	private Sprite sprite;
 	private Player player;
 	private boolean aggresive = false;
@@ -28,15 +26,14 @@ public class Wizard extends Enemy {
 	public Wizard(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
 		this.sprites = sprites;
-		defX = posX;
-		defY = posY;
 		
 		rand = new Random();
 		image = Sprite.getSprite(sprites, 384, 16, 16, 16);
 		
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
-		
+		addSolidClass((new Water(gameController, 0, 0)).getClass());
+		addSolidClass((new Door(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
 	}
 
@@ -80,7 +77,7 @@ public class Wizard extends Enemy {
 
 	@Override
 	public void restartLevel() {
-		setPos((int) defX, (int) defY);
+		initialPosition();
 	}
 
 	@Override
@@ -127,19 +124,16 @@ public class Wizard extends Enemy {
 			moving--;
 		}
 		
-		if(MyUtil.canSee(levelController, this, player)) {
+		if(MyUtil.canSee(levelController, this, player, 800, 550, 5)) {
 			aggresive = true;			
 			if(attackCooldown == 0) {
 				if(rand.nextInt(20) == 0) {
 					attackCooldown = 25;
+					
 					int spellSpeed = 16;
-						
-					float dxSpell = player.getMidX()-getMidX();
-					float dySpell = player.getMidY()-getMidY();
-				
-					float div = Math.max(Math.abs(dxSpell), Math.abs(dySpell));
-					dxSpell = (dxSpell/div)*spellSpeed;
-					dySpell = (dySpell/div)*spellSpeed;
+					float[] dirSpell = MyUtil.getDirection(getMidX(), getMidY(), player.getMidX(), player.getMidY(), spellSpeed);
+					float dxSpell = dirSpell[0];
+					float dySpell = dirSpell[1];
 					
 					levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
 					addMomentum(-dxSpell/2, -dySpell/2);

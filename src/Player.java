@@ -17,19 +17,17 @@ public class Player extends GameObjectMoving {
 	private boolean facingRight = true;
 	private int attackCooldown = 0;
 	private boolean hit = false;
-	private float defX;
-	private float defY;
 	
 	public Player(GameController gameController, float posX, float posY, BufferedImage sprites, UI ui) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
 		this.sprites = sprites;
 		this.ui = ui;
 		graphicCanvas = gameController.getGameWindow().getGraphicCanvas();
-		defX = posX;
-		defY = posY;
 		
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
+		addSolidClass((new Water(gameController, 0, 0)).getClass());
+		addSolidClass((new Door(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
 	}
 
@@ -72,14 +70,14 @@ public class Player extends GameObjectMoving {
 
 	@Override
 	public void kill() {
-		setPos((int) defX, (int) defY);
+		initialPosition();
 		graphicCanvas.setOffsetX(0);
 		graphicCanvas.setOffsetY(0);
 	}
 
 	@Override
 	public void restartLevel() {
-		setPos((int) defX, (int) defY);
+		initialPosition();
 		graphicCanvas.setOffsetX(0);
 		graphicCanvas.setOffsetY(0);
 	}
@@ -128,17 +126,11 @@ public class Player extends GameObjectMoving {
 				int spellSpeed = 16;
 				float mouseX = inputC.getMouseX();
 				float mouseY = inputC.getMouseY();
-				
-				float meX = (posX+(getHitboxWidth()/2))-graphicCanvas.getOffsetX();
-				float meY = (posY+(getHitboxHeight()/2))-graphicCanvas.getOffsetY();
-				
-				float dxSpell = mouseX-meX;
-				float dySpell = mouseY-meY;
-			
-				float div = Math.max(Math.abs(dxSpell), Math.abs(dySpell));
-				dxSpell = (dxSpell/div)*spellSpeed;
-				dySpell = (dySpell/div)*spellSpeed;
-				
+
+				float[] dirSpell = MyUtil.getDirection(getMidX()-graphicCanvas.getOffsetX(), getMidY()-graphicCanvas.getOffsetY(), mouseX, mouseY, spellSpeed);
+				float dxSpell = dirSpell[0];
+				float dySpell = dirSpell[1];
+
 				attackCooldown = 25;
 				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
 				addMomentum(-(dxSpell*10)/8, -(dySpell*10)/8);
@@ -168,5 +160,17 @@ public class Player extends GameObjectMoving {
 			ui.setLife(6);
 		}
 		hit = true;
+	}
+
+	public void giveKey() {
+		ui.increaseKeys(1);
+	}
+
+	public void takeKey() {
+		ui.increaseKeys(-1);
+	}
+
+	public int getKeys() {
+		return ui.getKeys();
 	}
 }

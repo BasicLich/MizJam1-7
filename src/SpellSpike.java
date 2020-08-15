@@ -24,6 +24,7 @@ public class SpellSpike extends GameObjectMoving {
 	private Color colorParticle;
 	private Color colorParticleImpact;
 	private int particleSize = 8;
+	private int lifeSpan = 200;
 	
 	public SpellSpike(GameController gameController, float posX, float posY, BufferedImage sprites, GameObject owner, float dx, float dy) {
 		super(gameController, posX, posY, 16, 16);
@@ -113,8 +114,8 @@ public class SpellSpike extends GameObjectMoving {
 			if(owner instanceof Player) {
 				if(obj instanceof Enemy && collide(obj)) {
 					levelController.removeGameObject(this);
-					Wizard wizard = (Wizard) obj;
-					wizard.hit();
+					Enemy enemy = (Enemy) obj;
+					enemy.hit();
 				}
 			} else {
 				if(obj instanceof Player && collide(obj)) {
@@ -123,6 +124,11 @@ public class SpellSpike extends GameObjectMoving {
 					player.hit();
 				}				 
 			}
+		}
+		
+		lifeSpan--;
+		if(lifeSpan < 0) {
+			levelController.removeGameObject(this);
 		}
 	}
 
