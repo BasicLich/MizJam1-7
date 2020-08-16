@@ -28,6 +28,7 @@ public class Warrior extends Enemy {
 		
 		image = Sprite.getSprite(sprites, 482, 1, 14, 16);
 		
+		addSolidClass((new CampFire(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Water(gameController, 0, 0)).getClass());

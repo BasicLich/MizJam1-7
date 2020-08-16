@@ -24,6 +24,7 @@ public class Player extends GameObjectMoving {
 		this.ui = ui;
 		graphicCanvas = gameController.getGameWindow().getGraphicCanvas();
 		
+		addSolidClass((new CampFire(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Water(gameController, 0, 0)).getClass());

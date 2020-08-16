@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFrame;
-
 import nWiweEngine.GameController;
 import nWiweEngine.GameObject;
 import nWiweEngine.GameWindow;
@@ -36,12 +34,15 @@ public class Main {
 				new Wall(gameController, 0, 0, sprites),
 				new Water(gameController, 0, 0),
 				new Warrior(gameController, 0, 0, sprites),
+				new Patrol(gameController, 0, 0, sprites),
 				new Wizard(gameController, 0, 0, sprites),
 				new Key(gameController, 0, 0, sprites),
 				new Door(gameController, 0, 0, sprites),
+				new CampFire(gameController, 0, 0, sprites),
 				new ButtonStart(gameController, 0, 0, ui),
 				new ButtonCredits(gameController, 0, 0),
-				new ButtonExit(gameController, 0, 0)};
+				new ButtonExit(gameController, 0, 0),
+				new WayPoint(gameController, 0, 0)};
 		gameController.addObjectTypes(objectTypes);
 		
 		LevelController levelController = gameController.getLevelController();
@@ -51,7 +52,6 @@ public class Main {
 			levelController.useEditor();			
 		} else {
 			levelController.loadLevel("menu.lvl");
-			//levelController.loadLevel("level.lvl");
 			levelController.startGame();
 		}
 

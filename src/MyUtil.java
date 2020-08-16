@@ -41,6 +41,13 @@ public class MyUtil {
 		return true;
 	}
 	
+	/*
+	 * Returns true if this object can see the other object
+	 */
+	public static boolean canSee(LevelController levelController, GameObject obj0, GameObject obj1, int maxX, int maxY) {
+		return canSee(levelController, obj0, obj1, maxX, maxY, -1);
+	}
+	
 	public static float getDifference(float pos0, float pos1) {
 		return Math.max(pos0, pos1) - Math.min(pos0, pos1);
 	}

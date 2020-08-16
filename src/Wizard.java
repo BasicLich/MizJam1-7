@@ -11,6 +11,7 @@ import nWiweEngine.SpriteBasic;
 public class Wizard extends Enemy {
 	private BufferedImage sprites;
 	private Sprite sprite;
+	private Sprite spriteHit;
 	private Player player;
 	private boolean aggresive = false;
 	private int attackCooldown = 0;
@@ -22,6 +23,7 @@ public class Wizard extends Enemy {
 	private int life = 3;
 	private int hit = 0;
 	private BufferedImage image;
+	private BufferedImage imageHit;
 	
 	public Wizard(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -29,7 +31,20 @@ public class Wizard extends Enemy {
 		
 		rand = new Random();
 		image = Sprite.getSprite(sprites, 384, 16, 16, 16);
+		sprite = new SpriteBasic(gameController, this, image);
 		
+		imageHit = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		for(int x=0; x<16; x++) {
+			for(int y=0; y<16; y++) {
+				Color c = new Color(image.getRGB(x, y));
+				if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
+					imageHit.setRGB(x, y, Color.BLACK.getRGB());
+				}
+			}
+		}
+		spriteHit = new SpriteBasic(gameController, this, imageHit);
+		
+		addSolidClass((new CampFire(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Water(gameController, 0, 0)).getClass());
@@ -49,22 +64,11 @@ public class Wizard extends Enemy {
 
 	@Override
 	public Sprite getSprite() {
-		if(hit != 0) {
-			BufferedImage imageHit = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-			for(int x=0; x<16; x++) {
-				for(int y=0; y<16; y++) {
-					Color c = new Color(image.getRGB(x, y));
-					if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
-						imageHit.setRGB(x, y, Color.BLACK.getRGB());
-					}
-				}
-			}
-			sprite = new SpriteBasic(gameController, this, imageHit);
+		if(hit == 0) {
+			return sprite;
 		} else {
-			sprite = new SpriteBasic(gameController, this, image);
+			return spriteHit;
 		}
-		
-		return sprite;
 	}
 
 	@Override

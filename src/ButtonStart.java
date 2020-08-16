@@ -31,7 +31,7 @@ public class ButtonStart extends Button {
 	@Override
 	public void clicked() {
 		ui.setActive(true);
-		levelController.loadLevel("level.lvl");
+		levelController.loadLevel("level1.lvl");
 		levelController.startGame();
 	}
 
