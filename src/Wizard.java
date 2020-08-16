@@ -77,7 +77,10 @@ public class Wizard extends Enemy {
 
 	@Override
 	public void restartLevel() {
+		life = 3;
 		initialPosition();
+		dx = 0;
+		dy = 0;
 	}
 
 	@Override
@@ -102,7 +105,7 @@ public class Wizard extends Enemy {
 		hit = Math.max(0, hit-1);
 		if(moving == 0) {
 			if(aggresive) {
-				int r = rand.nextInt(6);
+				int r = rand.nextInt(2);
 				if(r == 0) {
 					dx = speed;
 				} else if(r == 1) {
@@ -124,7 +127,7 @@ public class Wizard extends Enemy {
 			moving--;
 		}
 		
-		if(MyUtil.canSee(levelController, this, player, 800, 550, 5)) {
+		if(MyUtil.canSee(levelController, this, player, 800, 550, 2)) {
 			aggresive = true;			
 			if(attackCooldown == 0) {
 				if(rand.nextInt(20) == 0) {
@@ -146,7 +149,7 @@ public class Wizard extends Enemy {
 				attackCooldown--;
 			}
 		} else {
-			int r = rand.nextInt(20);
+			int r = rand.nextInt(40);
 			if(r == 0) aggresive = false;
 		}
 		

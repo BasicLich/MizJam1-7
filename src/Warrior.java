@@ -74,7 +74,12 @@ public class Warrior extends Enemy {
 
 	@Override
 	public void restartLevel() {
+		life = 2;
 		initialPosition();
+		hunting = false;
+		attack = 0;
+		dx = 0;
+		dy = 0;
 	}
 
 	@Override

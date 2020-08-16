@@ -31,7 +31,7 @@ public class MyUtil {
 
 		Line2D line = new Line2D.Float(midX, midY, objX, objY);
 		for(GameObject o : levelController.getGameObjects()) {
-			if(o instanceof Wall) {	
+			if(o instanceof Wall || o instanceof Tree) {	
 				Rectangle2D rect = new Rectangle2D.Float(o.getPosX(), o.getPosY(), o.getHitboxWidth(), o.getHitboxHeight());
 				if(line.intersects(rect)) {
 					return false;

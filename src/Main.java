@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
+
 import nWiweEngine.GameController;
 import nWiweEngine.GameObject;
 import nWiweEngine.GameWindow;
@@ -21,12 +23,11 @@ public class Main {
 		BufferedImage sprites = Sprite.readImage("images/colored_transparent_packed.png");
 				
 		//UI
-		UI ui = new UI(sprites);
+		UI ui = new UI(sprites, SCALE);
 		
 		//GameController
 		GameController gameController = new GameController(TITLE, WIDTH, HEIGHT, SCALE, GRID_SIZE);
 		gameController.constructControllers(ui);
-		
 		
 		//Add different objects
 		GameObject[] objectTypes = {
@@ -37,12 +38,11 @@ public class Main {
 				new Warrior(gameController, 0, 0, sprites),
 				new Wizard(gameController, 0, 0, sprites),
 				new Key(gameController, 0, 0, sprites),
-				new Door(gameController, 0, 0, sprites)};
+				new Door(gameController, 0, 0, sprites),
+				new ButtonStart(gameController, 0, 0, ui),
+				new ButtonCredits(gameController, 0, 0),
+				new ButtonExit(gameController, 0, 0)};
 		gameController.addObjectTypes(objectTypes);
-		
-		//Lights
-		Class[] lightWalls = {};
-		gameController.addLightWalls(lightWalls);
 		
 		LevelController levelController = gameController.getLevelController();
 		
@@ -50,7 +50,8 @@ public class Main {
 		if(useEditor) {
 			levelController.useEditor();			
 		} else {
-			levelController.loadLevel("level.lvl");
+			levelController.loadLevel("menu.lvl");
+			//levelController.loadLevel("level.lvl");
 			levelController.startGame();
 		}
 
