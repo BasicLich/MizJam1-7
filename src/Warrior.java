@@ -10,6 +10,8 @@ import nWiweEngine.SpriteBasic;
 public class Warrior extends Enemy {
 	private BufferedImage sprites;
 	private BufferedImage image;
+	private Sprite sprite;
+	private Sprite spriteHit;
 	private Player player;
 	private boolean hunting = false;
 	private float playerX;
@@ -19,7 +21,7 @@ public class Warrior extends Enemy {
 	private float dy = 0;
 	private int attack = 0;
 	private int cooldown = 0;
-	private int life = 2;
+	private int life = 4;
 	private int hit = 0;
 	
 	public Warrior(GameController gameController, float posX, float posY, BufferedImage sprites) {
@@ -34,6 +36,21 @@ public class Warrior extends Enemy {
 		addSolidClass((new Water(gameController, 0, 0)).getClass());
 		addSolidClass((new Door(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
+		
+		if(hit != 0) {
+			BufferedImage imageHit = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+			for(int x=0; x<14; x++) {
+				for(int y=0; y<16; y++) {
+					Color c = new Color(image.getRGB(x, y));
+					if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
+						imageHit.setRGB(x, y, Color.BLACK.getRGB());
+					}
+				}
+			}
+			spriteHit = new SpriteBasic(gameController, this, imageHit);
+		} else {
+			sprite = new SpriteBasic(gameController, this, image);
+		}
 	}
 
 	@Override
@@ -47,22 +64,11 @@ public class Warrior extends Enemy {
 
 	@Override
 	public Sprite getSprite() {
-		Sprite sprite;
-		if(hit != 0) {
-			BufferedImage imageHit = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-			for(int x=0; x<14; x++) {
-				for(int y=0; y<16; y++) {
-					Color c = new Color(image.getRGB(x, y));
-					if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
-						imageHit.setRGB(x, y, Color.BLACK.getRGB());
-					}
-				}
-			}
-			sprite = new SpriteBasic(gameController, this, imageHit);
+		if(hit == 0) {
+			return sprite;
 		} else {
-			sprite = new SpriteBasic(gameController, this, image);
+			return spriteHit;
 		}
-		return sprite;
 	}
 
 	@Override
@@ -94,7 +100,7 @@ public class Warrior extends Enemy {
 	@Override
 	public void update() {
 		if(attack == 0) {
-			boolean cansee = MyUtil.canSee(levelController, this, player, 800, 550, 5);
+			boolean cansee = MyUtil.canSee(levelController, this, player, 800, 550, 30);
 			
 			if(!hunting && cansee) {
 				hunting = true;			
@@ -113,6 +119,7 @@ public class Warrior extends Enemy {
 						hunting = false;
 						attack = 20;
 						addMomentum(dx*8, dy*8);
+						preventKnockback = true;
 						dx = 0;
 						dy = 0;						
 					}
@@ -129,16 +136,15 @@ public class Warrior extends Enemy {
 				if(dx == 0 && dy == 0) {
 					hunting = false;
 				}
-				
-				
 			}
 		} else {
+			preventKnockback = false;
 			attack--;
 		}
 		
 		float oldX = posX;
 		float oldY = posY;
-		move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
+		move(dx+getHorizontalGravity(), dy+getVerticalGravity(false));
 		float disX = MyUtil.getDifference(posX, oldX);
 		float disY = MyUtil.getDifference(posY, oldY);
 		if(hunting && disX < 0.5 && disY < 0.5) {

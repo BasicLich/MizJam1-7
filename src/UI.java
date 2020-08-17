@@ -91,4 +91,8 @@ public class UI extends DrawOverlay {
 	public void setActive(boolean b) {
 		active = b;
 	}
+
+	public void setKeys(int i) {
+		keys = i;
+	}
 }

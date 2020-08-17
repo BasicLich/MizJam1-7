@@ -109,7 +109,7 @@ public class Wizard extends Enemy {
 		hit = Math.max(0, hit-1);
 		if(moving == 0) {
 			if(aggresive) {
-				int r = rand.nextInt(2);
+				int r = rand.nextInt(5);
 				if(r == 0) {
 					dx = speed;
 				} else if(r == 1) {
@@ -131,33 +131,30 @@ public class Wizard extends Enemy {
 			moving--;
 		}
 		
-		if(MyUtil.canSee(levelController, this, player, 800, 550, 2)) {
+		if(MyUtil.canSee(levelController, this, player, 800, 550, 40)) {
 			aggresive = true;			
-			if(attackCooldown == 0) {
-				if(rand.nextInt(20) == 0) {
-					attackCooldown = 25;
-					
-					int spellSpeed = 16;
-					float[] dirSpell = MyUtil.getDirection(getMidX(), getMidY(), player.getMidX(), player.getMidY(), spellSpeed);
-					float dxSpell = dirSpell[0];
-					float dySpell = dirSpell[1];
-					
-					levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
-					addMomentum(-dxSpell/2, -dySpell/2);
-					
-					Color smokeColor = new Color(55, 55, 55, 150);
-					levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
-					levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
-				}
-			} else {
-				attackCooldown--;
+			if(attackCooldown == 0 && rand.nextInt(10) == 0) {
+				attackCooldown = 25;
+				
+				int spellSpeed = 16;
+				float[] dirSpell = MyUtil.getDirection(getMidX(), getMidY(), player.getMidX(), player.getMidY(), spellSpeed);
+				float dxSpell = dirSpell[0];
+				float dySpell = dirSpell[1];
+				
+				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
+				addMomentum(-dxSpell/2, -dySpell/2);
+				
+				Color smokeColor = new Color(55, 55, 55, 150);
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
+				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
 			}
 		} else {
-			int r = rand.nextInt(40);
+			int r = rand.nextInt(1000);
 			if(r == 0) aggresive = false;
 		}
 		
-		move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
+		attackCooldown = Math.max(0, attackCooldown-1);
+		move(dx+getHorizontalGravity(), dy+getVerticalGravity(false));
 	}
 
 	public void hit() {

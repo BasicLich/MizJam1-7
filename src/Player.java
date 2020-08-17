@@ -11,12 +11,16 @@ import nWiweEngine.SpriteBasic;
 
 public class Player extends GameObjectMoving {
 	private BufferedImage sprites;
+	private Sprite sprite;
+	private Sprite spriteHit;
 	private UI ui;
 	private GraphicCanvas graphicCanvas;
 	private int speed = 4;
 	private boolean facingRight = true;
-	private int attackCooldown = 0;
 	private boolean hit = false;
+	private int attackCooldown = 0;
+	private int areaCooldown = 0;
+	private int stun = 0;
 	
 	public Player(GameController gameController, float posX, float posY, BufferedImage sprites, UI ui) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -30,38 +34,43 @@ public class Player extends GameObjectMoving {
 		addSolidClass((new Water(gameController, 0, 0)).getClass());
 		addSolidClass((new Door(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);
+
+		BufferedImage image = Sprite.getSprite(sprites, 321, 114, 13, 13);	
+		BufferedImage imageHit = new BufferedImage(13, 13, BufferedImage.TYPE_INT_ARGB);
+		for(int x=0; x<13; x++) {
+			for(int y=0; y<13; y++) {
+				Color c = new Color(image.getRGB(x, y));
+				if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
+					imageHit.setRGB(x, y, Color.WHITE.getRGB());
+				}
+			}
+		}
+		
+		sprite = new SpriteBasic(gameController, this, image);
+		spriteHit = new SpriteBasic(gameController, this, imageHit);
 	}
 
 	@Override
 	public void construct() {}
 
 	@Override
-	public Sprite getSprite() {		
-		BufferedImage image;
+	public Sprite getSprite() {	
 		if(hit) {
-			image = Sprite.getSprite(sprites, 322, 116, 11, 10);
-			
-			for(int x=0; x<11; x++) {
-				for(int y=0; y<10; y++) {
-					Color c = new Color(image.getRGB(x, y));
-					if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
-						image.setRGB(x, y, Color.WHITE.getRGB());
-					}
-				}
+			if(facingRight) {
+				spriteHit.setReverse(false);			
+			} else {
+				spriteHit.setReverse(true);
 			}
 			hit = false;
+			return spriteHit;
 		} else {
-			image = Sprite.getSprite(sprites, 322, 116, 11, 10);
+			if(facingRight) {
+				sprite.setReverse(false);			
+			} else {
+				sprite.setReverse(true);
+			}
+			return sprite;
 		}
-		
-		Sprite sprite = new SpriteBasic(gameController, this, image);
-		if(facingRight) {
-			sprite.setReverse(false);			
-		} else {
-			sprite.setReverse(true);
-		}
-		
-		return sprite;
 	}
 
 	@Override
@@ -81,6 +90,8 @@ public class Player extends GameObjectMoving {
 		initialPosition();
 		graphicCanvas.setOffsetX(0);
 		graphicCanvas.setOffsetY(0);
+		ui.setLife(6);
+		ui.setKeys(0);
 	}
 
 	@Override
@@ -99,7 +110,7 @@ public class Player extends GameObjectMoving {
 		float offsetX = 0;
 		float offsetY = 0;
 		
-		if(attackCooldown == 0) {
+		if(stun == 0) {
 			//up
 			if(inputC.isKeyPressed(87) || inputC.isKeyPressed(38)) {
 				dy -= speed;
@@ -122,8 +133,15 @@ public class Player extends GameObjectMoving {
 				facingRight = false;
 			}
 			
+			//space
+			if(inputC.isKeyPressed(32) && areaCooldown == 0) {
+				areaCooldown = 20;
+				stun = 5;
+				levelController.addGameObject(new AreaSpell(gameController, getMidX(), getMidY(), this));
+			}
+			
 			//mouse
-			if(inputC.isMouseKeyPressed(1)) {
+			if(inputC.isMouseKeyPressed(1) && attackCooldown == 0) {
 				int spellSpeed = 16;
 				float mouseX = inputC.getMouseX();
 				float mouseY = inputC.getMouseY();
@@ -133,6 +151,7 @@ public class Player extends GameObjectMoving {
 				float dySpell = dirSpell[1];
 
 				attackCooldown = 25;
+				stun = 25;
 				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
 				addMomentum(-(dxSpell*10)/8, -(dySpell*10)/8);
 								
@@ -140,8 +159,6 @@ public class Player extends GameObjectMoving {
 				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
 				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
 			}
-		} else {
-			attackCooldown--;
 		}
 		
 		float oldX = posX; 
@@ -149,16 +166,19 @@ public class Player extends GameObjectMoving {
 		float[] newPos = move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
 		offsetX = newPos[0] - oldX;
 		offsetY = newPos[1] - oldY;
-		
+
 		graphicCanvas.increaseOffsetX(offsetX);
 		graphicCanvas.increaseOffsetY(offsetY);
+		
+		stun = Math.max(0, stun-1);
+		attackCooldown = Math.max(0, attackCooldown-1);
+		areaCooldown = Math.max(0, areaCooldown-1);
 	}
 
 	public void hit() {
 		ui.increaeLife(-1);
 		if(ui.getLife() == 0) {
 			levelController.restartLevel();
-			ui.setLife(6);
 		}
 		hit = true;
 	}

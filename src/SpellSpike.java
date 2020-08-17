@@ -58,6 +58,7 @@ public class SpellSpike extends GameObjectMoving {
 		image = rotated;
 		sprite = new SpriteBasic(gameController, this, image);
 		
+		addSolidClass((new Door(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Tree(gameController, 0, 0, sprites)).getClass());
 		addSolidClass((new Wall(gameController, 0, 0, sprites)).getClass());
 		setIgnoreBorder(true);

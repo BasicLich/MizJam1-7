@@ -36,6 +36,7 @@ public class Patrol extends Enemy {
 	private int cooldown = 0;
 	private int stun = 0;
 	private boolean bodyMove = false;
+	private boolean homeless = false;
 	
 	public Patrol(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -123,6 +124,7 @@ public class Patrol extends Enemy {
 		attack = 0;
 		cooldown = 0;
 		bodyMove = false;
+		homeless = false;
 	}
 
 	@Override
@@ -135,10 +137,12 @@ public class Patrol extends Enemy {
 
 	@Override
 	public void update() {
-		boolean canSeePlayer = MyUtil.canSee(levelController, this, player, 800, 550, 6);
+		boolean canSeePlayer = MyUtil.canSee(levelController, this, player, 800, 550, 30);
 		
 		//if not attacking
 		if(attack == 0) {
+			preventKnockback = false;
+			
 			//has seen the player
 			if(hunting) {
 				if(canSeePlayer) {
@@ -153,6 +157,7 @@ public class Patrol extends Enemy {
 						addMomentum(dx*8, dy*8);
 						dx = 0;
 						dy = 0;
+						preventKnockback = true;
 					}
 				}
 				
@@ -161,7 +166,7 @@ public class Patrol extends Enemy {
 				//if currently on patrol
 				if(onPatrol) {
 					//scans for new way point or camp fire
-					if(!hasSearched) {
+					if(!hasSearched && !homeless) {
 						for(GameObject obj : levelController.getGameObjects()) {
 							if(obj instanceof WayPoint || obj instanceof CampFire) {
 								boolean alreadyVisited = false;
@@ -181,11 +186,14 @@ public class Patrol extends Enemy {
 									goalX = obj.getMidX();
 									goalY = obj.getMidY();
 									hasSearched = true;
+									break;
 								}
 							}
-						}	
+						}
+						
+						if(!hasSearched) homeless = true;
 					//checks if he has arrived
-					} else {
+					} else if(hasSearched) {
 						float difX = MyUtil.getDifference(getMidX(), goalX);
 						float difY = MyUtil.getDifference(getMidY(), goalY);
 						float dif = MyUtil.getDifference(difX, difY);
@@ -244,8 +252,8 @@ public class Patrol extends Enemy {
 		
 		for(Patrol p : bodies) {
 			if(rand.nextInt(5)==0 && collide(p)) {
-				int x = (rand.nextInt(2) == 0) ? -10 : 10;
-				int y = (rand.nextInt(2) == 0) ? -10 : 10;
+				int x = (rand.nextInt(2) == 0) ? -32 : 32;
+				int y = (rand.nextInt(2) == 0) ? -32 : 32;
 				move(x, y);
 			}
 		}

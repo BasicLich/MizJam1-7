@@ -3,6 +3,7 @@ import java.awt.image.BufferedImage;
 
 import nWiweEngine.GameController;
 import nWiweEngine.GameObject;
+import nWiweEngine.GameVisual;
 import nWiweEngine.GameWindow;
 import nWiweEngine.LevelController;
 import nWiweEngine.Sprite;
@@ -43,7 +44,15 @@ public class Main {
 				new ButtonCredits(gameController, 0, 0),
 				new ButtonExit(gameController, 0, 0),
 				new WayPoint(gameController, 0, 0)};
-		gameController.addObjectTypes(objectTypes);
+		gameController.setObjectTypes(objectTypes);
+		
+		//Add different visuals
+		GameVisual[] gameVisuals = {
+				new Floor(gameController, 0, 0, sprites),
+				new Floor2(gameController, 0, 0, sprites),
+				new Floor3(gameController, 0, 0, sprites)
+		};
+		gameController.setVisualTypes(gameVisuals);
 		
 		LevelController levelController = gameController.getLevelController();
 		
