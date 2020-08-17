@@ -61,7 +61,7 @@ public class Door extends GameObject {
 		if(player != null && player.getKeys() > 0) {
 			float difX = MyUtil.getDifference(getMidX(), player.getMidX());
 			float difY = MyUtil.getDifference(getMidY(), player.getMidY());
-			if(difX+difY < 40) {
+			if(difX+difY < 50) {
 				locked = false;
 				player.takeKey();
 				levelController.removeGameObject(this);

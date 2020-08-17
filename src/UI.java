@@ -13,6 +13,9 @@ public class UI extends DrawOverlay {
 	private BufferedImage key;
 	private BufferedImage heart;
 	private BufferedImage halfHeart;
+	private BufferedImage emptyMana;
+	private BufferedImage halfMana;
+	private BufferedImage fullMana;
 	private int space = 8;
 	private int pos0 = 32;
 	private int pos1 = 32+pos0+space;
@@ -20,6 +23,8 @@ public class UI extends DrawOverlay {
 	private int life = 6;
 	private int keys = 0;
 	private boolean active;
+	private int maxMana = 4;
+	private int mana = 4;
 	
 	public UI(BufferedImage sprites, float scale) {
 		this.sprites = sprites;
@@ -28,6 +33,9 @@ public class UI extends DrawOverlay {
 		key= Sprite.getSprite(sprites, 545, 177, 16, 16);
 		heart = Sprite.getSprite(sprites, 673, 162, 14, 12);
 		halfHeart = Sprite.getSprite(sprites, 657, 162, 14, 12);
+		emptyMana = Sprite.getSprite(sprites, 640, 177, 14, 14);
+		halfMana = Sprite.getSprite(sprites, 656, 177, 14, 14);
+		fullMana = Sprite.getSprite(sprites, 672, 177, 14, 14);
 	}
 	
 	@Override
@@ -55,12 +63,21 @@ public class UI extends DrawOverlay {
 			g.drawImage(heart, pos2, 32, 32, 32, null);
 		}
 		
+		//mana
+		for(int i=0; i<maxMana/2; i++) {
+			int value = mana - (i*2);
+			if(value <= 0) {
+				g.drawImage(emptyMana, pos0+(i*32), 96, 32, 32, null);						
+			} else if(value == 1) {
+				g.drawImage(halfMana, pos0+(i*32), 96, 32, 32, null);
+			} else {
+				g.drawImage(fullMana, pos0+(i*32), 96, 32, 32, null);
+			}
+		}
+		
+		//keys
 		for(int i=0; i<keys; i++) {
-			g.drawImage(key, pos0+(i*32+space), 96, 32, 32, null);
-			//g.setColor(new Color(200, 20, 20, 255));
-			//Font font = new Font("Arial", Font.PLAIN, 32);
-			//g.setFont(font);
-			//g.drawString(""+keys, pos1, 96+24);
+			g.drawImage(key, pos0+(i*32+space), 160, 32, 32, null);
 		}
 	}
 	
@@ -94,5 +111,25 @@ public class UI extends DrawOverlay {
 
 	public void setKeys(int i) {
 		keys = i;
+	}
+
+	public void setMaxMana(int i) {
+		maxMana = i;
+	}
+	
+	public void setMana(int i) {
+		mana = i;
+	}
+
+	public void increaseMana(int i) {
+		mana += i;
+	}
+	
+	public int getMana() {
+		return mana;
+	}
+
+	public int getMaxMana() {
+		return maxMana;
 	}
 }

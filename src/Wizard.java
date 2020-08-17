@@ -24,6 +24,7 @@ public class Wizard extends Enemy {
 	private int hit = 0;
 	private BufferedImage image;
 	private BufferedImage imageHit;
+	private int observation = 40;
 	
 	public Wizard(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -109,7 +110,7 @@ public class Wizard extends Enemy {
 		hit = Math.max(0, hit-1);
 		if(moving == 0) {
 			if(aggresive) {
-				int r = rand.nextInt(5);
+				int r = rand.nextInt(8);
 				if(r == 0) {
 					dx = speed;
 				} else if(r == 1) {
@@ -131,7 +132,8 @@ public class Wizard extends Enemy {
 			moving--;
 		}
 		
-		if(MyUtil.canSee(levelController, this, player, 800, 550, 40)) {
+		if(MyUtil.canSee(levelController, this, player, 800, 550, observation)) {
+			observation = 10;
 			aggresive = true;			
 			if(attackCooldown == 0 && rand.nextInt(10) == 0) {
 				attackCooldown = 25;

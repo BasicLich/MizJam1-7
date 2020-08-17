@@ -37,6 +37,8 @@ public class Main {
 				new Warrior(gameController, 0, 0, sprites),
 				new Patrol(gameController, 0, 0, sprites),
 				new Wizard(gameController, 0, 0, sprites),
+				new Mana(gameController, 0, 0, sprites, ui),
+				new Heart(gameController, 0, 0, sprites, ui),
 				new Key(gameController, 0, 0, sprites),
 				new Door(gameController, 0, 0, sprites),
 				new CampFire(gameController, 0, 0, sprites),

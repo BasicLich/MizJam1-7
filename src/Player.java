@@ -21,6 +21,7 @@ public class Player extends GameObjectMoving {
 	private int attackCooldown = 0;
 	private int areaCooldown = 0;
 	private int stun = 0;
+	private int manaCooldown = 0;
 	
 	public Player(GameController gameController, float posX, float posY, BufferedImage sprites, UI ui) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -92,6 +93,8 @@ public class Player extends GameObjectMoving {
 		graphicCanvas.setOffsetY(0);
 		ui.setLife(6);
 		ui.setKeys(0);
+		ui.setMaxMana(4);
+		ui.setMana(4);
 	}
 
 	@Override
@@ -134,14 +137,16 @@ public class Player extends GameObjectMoving {
 			}
 			
 			//space
-			if(inputC.isKeyPressed(32) && areaCooldown == 0) {
+			if(inputC.isKeyPressed(32) && areaCooldown == 0 && ui.getMana()>=1) {
+				ui.increaseMana(-1);
 				areaCooldown = 20;
 				stun = 5;
 				levelController.addGameObject(new AreaSpell(gameController, getMidX(), getMidY(), this));
 			}
 			
 			//mouse
-			if(inputC.isMouseKeyPressed(1) && attackCooldown == 0) {
+			if(inputC.isMouseKeyPressed(1) && attackCooldown == 0 && ui.getMana()>=2) {
+				ui.increaseMana(-2);
 				int spellSpeed = 16;
 				float mouseX = inputC.getMouseX();
 				float mouseY = inputC.getMouseY();
@@ -173,6 +178,15 @@ public class Player extends GameObjectMoving {
 		stun = Math.max(0, stun-1);
 		attackCooldown = Math.max(0, attackCooldown-1);
 		areaCooldown = Math.max(0, areaCooldown-1);
+		
+		if(manaCooldown == 0) {
+			if(ui.getMana() != ui.getMaxMana()) {
+				manaCooldown = 60;
+			}
+		} else {
+			manaCooldown--;
+			if(manaCooldown == 0) ui.increaseMana(1);
+		}
 	}
 
 	public void hit() {

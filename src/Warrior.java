@@ -21,8 +21,9 @@ public class Warrior extends Enemy {
 	private float dy = 0;
 	private int attack = 0;
 	private int cooldown = 0;
-	private int life = 4;
+	private int life = 2;
 	private int hit = 0;
+	private int observation = 30;
 	
 	public Warrior(GameController gameController, float posX, float posY, BufferedImage sprites) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -100,7 +101,7 @@ public class Warrior extends Enemy {
 	@Override
 	public void update() {
 		if(attack == 0) {
-			boolean cansee = MyUtil.canSee(levelController, this, player, 800, 550, 30);
+			boolean cansee = MyUtil.canSee(levelController, this, player, 800, 550, observation);
 			
 			if(!hunting && cansee) {
 				hunting = true;			
@@ -108,6 +109,7 @@ public class Warrior extends Enemy {
 			
 			if(hunting) {
 				if(cansee) {
+					observation = 10;
 					playerX = player.getMidX();
 					playerY = player.getMidY();
 					float[] dir = MyUtil.getDirection(getMidX(), getMidY(), playerX, playerY, speed);

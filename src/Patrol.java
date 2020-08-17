@@ -28,7 +28,7 @@ public class Patrol extends Enemy {
 	private boolean hasSearched = false;
 	private Random rand;
 	private int restTime = 2500;
-	private int life = 10;
+	private int life = 4;
 	private int hit = 0;
 	private boolean hunting = false;
 	private Player player;
@@ -117,7 +117,7 @@ public class Patrol extends Enemy {
 		onPatrol = false;
 		dx = 0;
 		dy = 0;
-		life = 10;
+		life = 4;
 		initialPosition();
 		hunting = false;
 		speed = walk;
@@ -178,7 +178,7 @@ public class Patrol extends Enemy {
 								}
 								if(alreadyVisited) continue;
 								
-								if(MyUtil.canSee(levelController, obj, this, 500, 500)) {
+								if(MyUtil.canSee(levelController, obj, this, 800, 550)) {
 									float[] dir = MyUtil.getDirection(getMidX(), getMidY(), obj.getMidX(), obj.getMidY());
 									currentObj = obj;
 									dx = dir[0];
