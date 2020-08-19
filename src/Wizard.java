@@ -20,7 +20,7 @@ public class Wizard extends Enemy {
 	private float dy = 0;
 	private int moving = 0;
 	private int speed = 2;
-	private int life = 3;
+	private int life = 2;
 	private int hit = 0;
 	private BufferedImage image;
 	private BufferedImage imageHit;
@@ -82,7 +82,7 @@ public class Wizard extends Enemy {
 
 	@Override
 	public void restartLevel() {
-		life = 3;
+		life = 2;
 		initialPosition();
 		dx = 0;
 		dy = 0;

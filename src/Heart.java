@@ -57,7 +57,7 @@ public class Heart extends GameObject {
 	@Override
 	public void update() {
 		if(collide(player)) {
-			ui.increaeLife(1);
+			ui.increaseLife(2);
 			levelController.removeGameObject(this);
 		}
 	}

@@ -17,6 +17,7 @@ import nWiweEngine.SpriteBasic;
 
 public class ButtonCredits extends Button {
 	private Sprite sprite;
+	private JFrame frame;
 	
 	public ButtonCredits(GameController gameController, float posX, float posY) {
 		super(gameController, posX, posY);
@@ -35,12 +36,15 @@ public class ButtonCredits extends Button {
 
 	@Override
 	public void clicked() {
-		String s = "This game is implemented for the game jam: Miz Jam 1\n\n"
-				+ "Game jam: https://itch.io/jam/miz-jam-1\n"
+		String s = "This game is implemented for the game jam: Miz Jam 1\n"
+				+ "which can be found on https://itch.io/jam/miz-jam-1\n\n"
 				+ "The game is programmed by: Nicolai Wiwe Andersen\n"
 				+ "The game is implemented in the engine: nWiweEngine\n"
-				+ "The engine is programmed by Nicolai Wiwe Andersen\n"
-				+ "Art kit from: https://kenney.nl/assets/bit-pack\n";
+				+ "The engine is programmed by Nicolai Wiwe Andersen\n\n"
+				+ "Art kit from: https://kenney.nl/assets/bit-pack\n\n"
+				+ "Sound: reNovation by airtone (c) copyright 2019\n"
+				+ "Licensed under a Creative Commons Attribution (3.0)\n"
+				+ "license. http://dig.ccmixter.org/files/airtone/60674";
 		
 		JTextArea text = new JTextArea(s);
 		text.setEditable(false);
@@ -48,9 +52,9 @@ public class ButtonCredits extends Button {
 		text.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		text.setAlignmentY(JComponent.CENTER_ALIGNMENT);
 		
-		Dimension dim = new Dimension(500, 500);
+		Dimension dim = new Dimension(400, 300);
 		
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setTitle("Credits");
 		frame.setLayout(new GridBagLayout());
 		frame.setSize(dim);

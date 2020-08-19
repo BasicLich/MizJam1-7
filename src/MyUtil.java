@@ -19,14 +19,14 @@ public class MyUtil {
 		}
 		
 		//checks if in range for x-axis
-		float midX = obj0.getMidX();//posX+(obj0.getHitboxWidth()/2);
-		float objX = obj1.getMidX();// obj1.getPosX()+(obj1.getHitboxWidth()/2);
+		float midX = obj0.getMidX();
+		float objX = obj1.getMidX();
 		float distanceX = Math.max(midX, objX) - Math.min(midX, objX);
 		if(distanceX > maxX) return false;
 		
 		//checks if in range for y-axis
-		float midY = obj0.getMidY();// posY+(obj0.getHitboxHeight()/2);
-		float objY = obj1.getMidY();// obj1.getPosY()+(obj1.getHitboxHeight()/2);
+		float midY = obj0.getMidY();
+		float objY = obj1.getMidY();
 		float distanceY = Math.max(midY, objY) - Math.min(midY, objY);
 		if(distanceY > maxY) return false;
 

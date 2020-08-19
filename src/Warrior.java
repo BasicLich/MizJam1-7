@@ -21,7 +21,7 @@ public class Warrior extends Enemy {
 	private float dy = 0;
 	private int attack = 0;
 	private int cooldown = 0;
-	private int life = 2;
+	private int life = 3;
 	private int hit = 0;
 	private int observation = 30;
 	
@@ -82,7 +82,7 @@ public class Warrior extends Enemy {
 
 	@Override
 	public void restartLevel() {
-		life = 2;
+		life = 3;
 		initialPosition();
 		hunting = false;
 		attack = 0;

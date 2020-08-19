@@ -13,15 +13,17 @@ public class Player extends GameObjectMoving {
 	private BufferedImage sprites;
 	private Sprite sprite;
 	private Sprite spriteHit;
+	private Sprite spriteDead;
 	private UI ui;
 	private GraphicCanvas graphicCanvas;
 	private int speed = 4;
 	private boolean facingRight = true;
-	private boolean hit = false;
+	private int hit = 0;
 	private int attackCooldown = 0;
 	private int areaCooldown = 0;
 	private int stun = 0;
 	private int manaCooldown = 0;
+	private int death = 0;
 	
 	public Player(GameController gameController, float posX, float posY, BufferedImage sprites, UI ui) {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
@@ -46,9 +48,19 @@ public class Player extends GameObjectMoving {
 				}
 			}
 		}
+		BufferedImage imageDead = new BufferedImage(13, 13, BufferedImage.TYPE_INT_ARGB);
+		for(int x=0; x<13; x++) {
+			for(int y=0; y<13; y++) {
+				Color c = new Color(image.getRGB(x, y));
+				if(!(c.getRed()==0 && c.getGreen()==0 && c.getBlue()==0)) {
+					imageDead.setRGB(x, y, Color.BLACK.getRGB());
+				}
+			}
+		}
 		
 		sprite = new SpriteBasic(gameController, this, image);
 		spriteHit = new SpriteBasic(gameController, this, imageHit);
+		spriteDead = new SpriteBasic(gameController, this, imageDead);
 	}
 
 	@Override
@@ -56,21 +68,29 @@ public class Player extends GameObjectMoving {
 
 	@Override
 	public Sprite getSprite() {	
-		if(hit) {
-			if(facingRight) {
-				spriteHit.setReverse(false);			
+		if(death == 0) {
+			if(hit > 0) {
+				if(facingRight) {
+					spriteHit.setReverse(false);			
+				} else {
+					spriteHit.setReverse(true);
+				}
+				return spriteHit;
 			} else {
-				spriteHit.setReverse(true);
-			}
-			hit = false;
-			return spriteHit;
+				if(facingRight) {
+					sprite.setReverse(false);			
+				} else {
+					sprite.setReverse(true);
+				}
+				return sprite;
+			}			
 		} else {
 			if(facingRight) {
-				sprite.setReverse(false);			
+				spriteDead.setReverse(false);			
 			} else {
-				sprite.setReverse(true);
+				spriteDead.setReverse(true);
 			}
-			return sprite;
+			return spriteDead;
 		}
 	}
 
@@ -95,6 +115,7 @@ public class Player extends GameObjectMoving {
 		ui.setKeys(0);
 		ui.setMaxMana(4);
 		ui.setMana(4);
+		manaCooldown = 0;
 	}
 
 	@Override
@@ -107,94 +128,100 @@ public class Player extends GameObjectMoving {
 
 	@Override
 	public void update() {
-		InputController inputC = gameController.getInputController();
-		float dx = 0;
-		float dy = 0;
-		float offsetX = 0;
-		float offsetY = 0;
-		
-		if(stun == 0) {
-			//up
-			if(inputC.isKeyPressed(87) || inputC.isKeyPressed(38)) {
-				dy -= speed;
-			}
-
-			//down
-			if(inputC.isKeyPressed(83) || inputC.isKeyPressed(40)) {
-				dy += speed;
-			}
-
-			//right
-			if(inputC.isKeyPressed(39) || inputC.isKeyPressed(68)) {
-				dx += speed;
-				facingRight = true;
-			}
-
-			//left
-			if(inputC.isKeyPressed(37) || inputC.isKeyPressed(65)) {
-				dx -= speed;
-				facingRight = false;
-			}
-			
-			//space
-			if(inputC.isKeyPressed(32) && areaCooldown == 0 && ui.getMana()>=1) {
-				ui.increaseMana(-1);
-				areaCooldown = 20;
-				stun = 5;
-				levelController.addGameObject(new AreaSpell(gameController, getMidX(), getMidY(), this));
-			}
-			
-			//mouse
-			if(inputC.isMouseKeyPressed(1) && attackCooldown == 0 && ui.getMana()>=2) {
-				ui.increaseMana(-2);
-				int spellSpeed = 16;
-				float mouseX = inputC.getMouseX();
-				float mouseY = inputC.getMouseY();
-
-				float[] dirSpell = MyUtil.getDirection(getMidX()-graphicCanvas.getOffsetX(), getMidY()-graphicCanvas.getOffsetY(), mouseX, mouseY, spellSpeed);
-				float dxSpell = dirSpell[0];
-				float dySpell = dirSpell[1];
-
-				attackCooldown = 25;
-				stun = 25;
-				levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
-				addMomentum(-(dxSpell*10)/8, -(dySpell*10)/8);
-								
-				Color smokeColor = new Color(55, 55, 55, 150);
-				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
-				levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
-			}
-		}
-		
-		float oldX = posX; 
-		float oldY = posY;
-		float[] newPos = move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
-		offsetX = newPos[0] - oldX;
-		offsetY = newPos[1] - oldY;
-
-		graphicCanvas.increaseOffsetX(offsetX);
-		graphicCanvas.increaseOffsetY(offsetY);
-		
-		stun = Math.max(0, stun-1);
-		attackCooldown = Math.max(0, attackCooldown-1);
-		areaCooldown = Math.max(0, areaCooldown-1);
-		
-		if(manaCooldown == 0) {
-			if(ui.getMana() != ui.getMaxMana()) {
-				manaCooldown = 60;
-			}
+		if(death > 0) {
+			death--;
+			if(death == 1) levelController.restartLevel();
 		} else {
-			manaCooldown--;
-			if(manaCooldown == 0) ui.increaseMana(1);
+			InputController inputC = gameController.getInputController();
+			float dx = 0;
+			float dy = 0;
+			float offsetX = 0;
+			float offsetY = 0;
+			
+			if(stun == 0) {
+				//up
+				if(inputC.isKeyPressed(87) || inputC.isKeyPressed(38)) {
+					dy -= speed;
+				}
+
+				//down
+				if(inputC.isKeyPressed(83) || inputC.isKeyPressed(40)) {
+					dy += speed;
+				}
+
+				//right
+				if(inputC.isKeyPressed(39) || inputC.isKeyPressed(68)) {
+					dx += speed;
+					facingRight = true;
+				}
+
+				//left
+				if(inputC.isKeyPressed(37) || inputC.isKeyPressed(65)) {
+					dx -= speed;
+					facingRight = false;
+				}
+				
+				//space
+				if(inputC.isKeyPressed(32) && areaCooldown == 0 && ui.getMana()>=1) {
+					ui.increaseMana(-1);
+					areaCooldown = 20;
+					stun = 5;
+					levelController.addGameObject(new AreaSpell(gameController, getMidX(), getMidY(), this));
+				}
+				
+				//mouse
+				if(inputC.isMouseKeyPressed(1) && attackCooldown == 0 && ui.getMana()>=2) {
+					ui.increaseMana(-2);
+					int spellSpeed = 16;
+					float mouseX = inputC.getMouseX();
+					float mouseY = inputC.getMouseY();
+
+					float[] dirSpell = MyUtil.getDirection(getMidX()-graphicCanvas.getOffsetX(), getMidY()-graphicCanvas.getOffsetY(), mouseX, mouseY, spellSpeed);
+					float dxSpell = dirSpell[0];
+					float dySpell = dirSpell[1];
+
+					attackCooldown = 25;
+					stun = 25;
+					levelController.addGameObject(new SpellSpike(gameController, posX, posY, sprites, this, dxSpell, dySpell));
+					addMomentum(-dxSpell, -dySpell);
+									
+					Color smokeColor = new Color(55, 55, 55, 150);
+					levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
+					levelController.addGameObject(new Particle(gameController, posX, posY, 16, smokeColor, dxSpell/2, dySpell/2));	
+				}
+			}
+			
+			float oldX = posX; 
+			float oldY = posY;
+			float[] newPos = move(dx+getHorizontalGravity() , dy+getVerticalGravity(false));
+			offsetX = newPos[0] - oldX;
+			offsetY = newPos[1] - oldY;
+
+			graphicCanvas.increaseOffsetX(offsetX);
+			graphicCanvas.increaseOffsetY(offsetY);
+			
+			stun = Math.max(0, stun-1);
+			attackCooldown = Math.max(0, attackCooldown-1);
+			areaCooldown = Math.max(0, areaCooldown-1);
+			
+			if(manaCooldown == 0) {
+				if(ui.getMana() != ui.getMaxMana()) {
+					manaCooldown = 60;
+				}
+			} else {
+				manaCooldown--;
+				if(manaCooldown == 0) ui.increaseMana(1);
+			}
+			hit = Math.max(0, hit-1);
 		}
 	}
 
 	public void hit() {
-		ui.increaeLife(-1);
+		ui.increaseLife(-1);
 		if(ui.getLife() == 0) {
-			levelController.restartLevel();
+			if(death == 0) death = 60;
 		}
-		hit = true;
+		hit = 10;
 	}
 
 	public void giveKey() {

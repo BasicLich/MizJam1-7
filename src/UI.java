@@ -5,9 +5,11 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import nWiweEngine.DrawOverlay;
+import nWiweEngine.GameController;
 import nWiweEngine.Sprite;
 
 public class UI extends DrawOverlay {
+	private GameController gameController;
 	private BufferedImage sprites;
 	private float scale;
 	private BufferedImage key;
@@ -25,8 +27,10 @@ public class UI extends DrawOverlay {
 	private boolean active;
 	private int maxMana = 4;
 	private int mana = 4;
+	private boolean victory = false;
 	
-	public UI(BufferedImage sprites, float scale) {
+	public UI(GameController gameController, BufferedImage sprites, float scale) {
+		this.gameController = gameController;
 		this.sprites = sprites;
 		this.scale = scale;
 		
@@ -41,56 +45,51 @@ public class UI extends DrawOverlay {
 	@Override
 	public void draw(Graphics graph) {
 		if(!active) return;
-		
 		Graphics2D g = (Graphics2D) graph;
 		g.scale(scale, scale);
+
 		
-		if(life == 1) {
-			g.drawImage(halfHeart, pos0, 32, 32, 32, null);
-		} else if(life >= 2) {
-			g.drawImage(heart, pos0, 32, 32, 32, null);
-		}
-		
-		if(life == 3) {
-			g.drawImage(halfHeart, pos1, 32, 32, 32, null);
-		} else if(life >= 4) {
-			g.drawImage(heart, pos1, 32, 32, 32, null);
-		}
-		
-		if(life == 5) {
-			g.drawImage(halfHeart, pos2, 32, 32, 32, null);
-		} else if(life == 6) {
-			g.drawImage(heart, pos2, 32, 32, 32, null);
-		}
-		
-		//mana
-		for(int i=0; i<maxMana/2; i++) {
-			int value = mana - (i*2);
-			if(value <= 0) {
-				g.drawImage(emptyMana, pos0+(i*32), 96, 32, 32, null);						
-			} else if(value == 1) {
-				g.drawImage(halfMana, pos0+(i*32), 96, 32, 32, null);
-			} else {
-				g.drawImage(fullMana, pos0+(i*32), 96, 32, 32, null);
+		if(victory) {
+			g.setColor(Color.YELLOW);
+			g.setFont(new Font("Arial", Font.PLAIN, 256));
+			g.drawString("GG", gameController.getGameWindow().getGraphicCanvas().getWidth()/2-256, gameController.getGameWindow().getGraphicCanvas().getHeight()/2);
+		} else {
+			
+			
+			for(int i=0; i<Math.ceil(((float) life)/2.0); i++) {
+				int value = life-(i*2);
+				if(value == 1) {
+					g.drawImage(halfHeart, pos0+(i*32), 32, 32, 32, null);
+				} else {
+					g.drawImage(heart, pos0+(i*32), 32, 32, 32, null);
+				}
+			}
+			
+			//mana
+			for(int i=0; i<maxMana/2; i++) {
+				int value = mana - (i*2);
+				if(value <= 0) {
+					g.drawImage(emptyMana, pos0+(i*32), 96, 32, 32, null);						
+				} else if(value == 1) {
+					g.drawImage(halfMana, pos0+(i*32), 96, 32, 32, null);
+				} else {
+					g.drawImage(fullMana, pos0+(i*32), 96, 32, 32, null);
+				}
+			}
+			
+			//keys
+			for(int i=0; i<keys; i++) {
+				g.drawImage(key, pos0+(i*32+space), 160, 32, 32, null);
 			}
 		}
-		
-		//keys
-		for(int i=0; i<keys; i++) {
-			g.drawImage(key, pos0+(i*32+space), 160, 32, 32, null);
-		}
 	}
 	
-	public int cab(int i) {
-		return Math.max(0, Math.min(i, 6));
-	}
-	
-	public void increaeLife(int i) {
-		life = cab(life+i);
+	public void increaseLife(int i) {
+		life += i;
 	}
 	
 	public void setLife(int i) {
-		life = cab(i);
+		life = i;
 	}
 
 	public int getLife() {
@@ -131,5 +130,9 @@ public class UI extends DrawOverlay {
 
 	public int getMaxMana() {
 		return maxMana;
+	}
+
+	public void setVictory() {
+		victory = true;
 	}
 }

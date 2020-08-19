@@ -169,6 +169,7 @@ public class Patrol extends Enemy {
 					if(!hasSearched && !homeless) {
 						for(GameObject obj : levelController.getGameObjects()) {
 							if(obj instanceof WayPoint || obj instanceof CampFire) {
+								//checks if it has already been visited
 								boolean alreadyVisited = false;
 								for(GameObject o : visited) {
 									if(obj == o) {
@@ -178,7 +179,8 @@ public class Patrol extends Enemy {
 								}
 								if(alreadyVisited) continue;
 								
-								if(MyUtil.canSee(levelController, obj, this, 800, 550)) {
+								//checks if the patrol can see the campfire or way point
+								if(MyUtil.canSee(levelController, this, obj, 800, 550)) {
 									float[] dir = MyUtil.getDirection(getMidX(), getMidY(), obj.getMidX(), obj.getMidY());
 									currentObj = obj;
 									dx = dir[0];
@@ -191,7 +193,9 @@ public class Patrol extends Enemy {
 							}
 						}
 						
-						if(!hasSearched) homeless = true;
+						if(!hasSearched) {
+							homeless = true;
+						}
 					//checks if he has arrived
 					} else if(hasSearched) {
 						float difX = MyUtil.getDifference(getMidX(), goalX);
