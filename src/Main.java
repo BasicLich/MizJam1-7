@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -82,7 +83,7 @@ public class Main {
 	
 	public static void method(String title, int width, int height, float scale, int gridSize, int fps, boolean showDebug) {
 		//Sprite kit
-		BufferedImage sprites = Sprite.readImage("images/colored_transparent_packed.png");
+		BufferedImage sprites = Sprite.readImage("src/images/colored_transparent_packed.png");
 	
 		//GameController
 		GameController gameController = new GameController(title, width, height, scale, gridSize);
@@ -128,8 +129,8 @@ public class Main {
 		if(useEditor) {
 			levelController.useEditor();			
 		} else {	
-			gameController.playSound("sounds/reNovation.wav");
-			levelController.loadLevel("menu.lvl");
+			gameController.playSound("src/sounds/reNovation.wav");
+			levelController.loadLevel("src/menu.lvl");
 			levelController.startGame();
 		}
 		

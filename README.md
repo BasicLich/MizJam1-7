@@ -1,3 +1,6 @@
+#The adventure of the ugly blue thing
+Try the game at https://nicolai4321.itch.io/the-adventure-of-the-ugly-blue-thing
+
 This game is implemented for the game jam: Miz Jam 1
 which can be found on https://itch.io/jam/miz-jam-1
 

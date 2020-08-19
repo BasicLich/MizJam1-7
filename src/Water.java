@@ -13,20 +13,20 @@ public class Water extends GameObject {
 		super(gameController, posX, posY, gameController.getGridSize(), gameController.getGridSize());
 		
 		ArrayList<String> lst = new ArrayList<String>();
-		lst.add("images/w_deep.png");
-		lst.add("images/w_n.png");
-		lst.add("images/w_ne.png");
-		lst.add("images/w_nw.png");
-		lst.add("images/w_e.png");
-		lst.add("images/w_w.png");
-		lst.add("images/w_se.png");
-		lst.add("images/w_sw.png");
-		lst.add("images/w_s.png");
-		lst.add("images/w_deep.png");
-		lst.add("images/w_deep.png");
-		lst.add("images/w_deep.png");
-		lst.add("images/w_deep.png");
-		lst.add("images/w_deep.png");
+		lst.add("src/images/w_deep.png");
+		lst.add("src/images/w_n.png");
+		lst.add("src/images/w_ne.png");
+		lst.add("src/images/w_nw.png");
+		lst.add("src/images/w_e.png");
+		lst.add("src/images/w_w.png");
+		lst.add("src/images/w_se.png");
+		lst.add("src/images/w_sw.png");
+		lst.add("src/images/w_s.png");
+		lst.add("src/images/w_deep.png");
+		lst.add("src/images/w_deep.png");
+		lst.add("src/images/w_deep.png");
+		lst.add("src/images/w_deep.png");
+		lst.add("src/images/w_deep.png");
 		sprite = new SpriteTileset(gameController, this, lst, gameController.getGridSize(), gameController.getGridSize());
 	}
 
